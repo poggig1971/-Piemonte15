@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paris · 24–26 Aprile 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+
+/* ══════════════════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --creme:       #F7F3EC;
+  --creme-dark:  #ECE7DC;
+  --bleu:        #002395;
+  --rouge:       #C8102E;
+  --or:          #C9A84C;
+  --or-dark:     #8B6A14;
+  --noir:        #18181B;
+  --gris:        #6B7280;
+  --blanc:       #FFFFFF;
+  --radius:      12px;
+  --radius-sm:   6px;
+  --shadow:      0 2px 16px rgba(0,0,0,0.08);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.14);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--creme);
+  color: var(--noir);
+  font-family: 'Crimson Text', Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TRICOLOR BAR
+══════════════════════════════════════════════════════════ */
+.tricolor {
+  height: 6px;
+  background: linear-gradient(to right,
+    #002395 33.33%,
+    #FFFFFF 33.33%, #FFFFFF 66.66%,
+    #ED2939 66.66%);
+}
+
+/* ══════════════════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════════════════ */
+header {
+  background: var(--noir);
+  color: #fff;
+  padding: 4rem 2rem 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, rgba(0,35,149,0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 15% 80%, rgba(200,16,46,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.eiffel-bg {
+  position: absolute;
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(7rem, 18vw, 14rem);
+  opacity: 0.05;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.6rem;
+}
+
+.site-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(4.5rem, 11vw, 9rem);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+
+.site-title span {
+  display: block;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.28em;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.45);
+  margin-top: 0.9rem;
+  font-style: italic;
+}
+
+.header-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.8rem;
+}
+
+.pill {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border-radius: 99px;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.72);
+  backdrop-filter: blur(4px);
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAV TABS
+══════════════════════════════════════════════════════════ */
+.nav-wrapper {
+  background: var(--blanc);
+  border-bottom: 1px solid var(--creme-dark);
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.tab-btn {
+  padding: 1rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gris);
+  border-bottom: 3px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+}
+
+.tab-btn .tab-date {
+  font-size: 0.56rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: #9CA3AF;
+  transition: color 0.2s;
+}
+
+.tab-btn:hover { color: var(--noir); }
+
+.tab-btn.active[data-day="1"] { color: var(--bleu); border-color: var(--bleu); }
+.tab-btn.active[data-day="2"] { color: var(--rouge); border-color: var(--rouge); }
+.tab-btn.active[data-day="3"] { color: var(--or-dark); border-color: var(--or); }
+
+.tab-btn.active .tab-date { color: currentColor; opacity: 0.65; }
+
+/* ══════════════════════════════════════════════════════════
+   DAY SECTIONS
+══════════════════════════════════════════════════════════ */
+.day-section { display: none; }
+.day-section.active { display: block; }
+
+/* DAY HEADER */
+.day-header {
+  padding: 3rem 2rem 2.2rem;
+  border-bottom: 1px solid var(--creme-dark);
+}
+
+.day-header-inner { max-width: 1100px; margin: 0 auto; }
+
+.day-tag {
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.8rem;
+  border-radius: 99px;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+.day-tag.d1 { background: var(--bleu); }
+.day-tag.d2 { background: var(--rouge); }
+.day-tag.d3 { background: var(--or); color: var(--noir); }
+
+.day-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 0.3rem;
+}
+
+.day-theme {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gris);
+  margin-bottom: 1.2rem;
+}
+
+.day-intro {
+  font-size: 1.05rem;
+  color: #555;
+  font-style: italic;
+  max-width: 780px;
+  line-height: 1.75;
+}
+
+/* DAY CONTENT */
+.day-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 3rem;
+}
+
+/* TIP BOX */
+.tip-box {
+  background: #FEFBF0;
+  border: 1px solid #E8D9A0;
+  border-left: 4px solid var(--or);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.3rem;
+  margin-bottom: 2.2rem;
+  font-size: 0.92rem;
+  color: #544;
+  line-height: 1.65;
+}
+
+.tip-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--or-dark);
+  margin-bottom: 0.35rem;
+}
+
+/* ══════════════════════════════════════════════════════════
+   STOPS GRID
+══════════════════════════════════════════════════════════ */
+.stops-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 1.4rem;
+  margin-bottom: 3rem;
+}
+
+/* STOP CARD */
+.stop-card {
+  background: var(--blanc);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  position: relative;
+}
+
+.stop-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-stripe { height: 4px; flex-shrink: 0; }
+.d1 .card-stripe { background: var(--bleu); }
+.d2 .card-stripe { background: var(--rouge); }
+.d3 .card-stripe { background: var(--or); }
+
+.card-body {
+  padding: 1.25rem 1.4rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+  gap: 0.5rem;
+}
+
+.badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.badge {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 99px;
+}
+
+.badge-cat  { background: #F0EDE8; color: var(--gris); }
+.badge-time { color: #fff; }
+.d1 .badge-time { background: var(--bleu); }
+.d2 .badge-time { background: var(--rouge); }
+.d3 .badge-time { background: var(--or); color: var(--noir); }
+
+.stop-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--creme-dark);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gris);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: #565656;
+  line-height: 1.65;
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.card-info {
+  border-top: 1px solid #F0EDE8;
+  padding-top: 0.8rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.66rem;
+  color: var(--gris);
+  line-height: 1.4;
+}
+
+.info-booking {
+  color: var(--rouge);
+  font-weight: 700;
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 0.48rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid currentColor;
+  transition: background 0.18s ease, color 0.18s ease;
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.d1 .btn-link { color: var(--bleu); }
+.d1 .btn-link:hover { background: var(--bleu); color: #fff; }
+.d2 .btn-link { color: var(--rouge); }
+.d2 .btn-link:hover { background: var(--rouge); color: #fff; }
+.d3 .btn-link { color: var(--or-dark); border-color: var(--or); }
+.d3 .btn-link:hover { background: var(--or); color: var(--noir); }
+
+/* ══════════════════════════════════════════════════════════
+   MAP
+══════════════════════════════════════════════════════════ */
+.map-section { margin-top: 0.5rem; }
+
+.map-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  color: var(--gris);
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.3rem;
+  border: 2px solid rgba(255,255,255,0.8);
+}
+
+.map-container {
+  height: 450px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--creme-dark);
+}
+
+/* ══════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════ */
+footer {
+  background: var(--noir);
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  padding: 2.5rem 2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+footer strong { color: rgba(255,255,255,0.6); font-weight: 600; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .stops-grid { grid-template-columns: 1fr; }
+  .map-container { height: 350px; }
+  .day-header, .day-content { padding-left: 1rem; padding-right: 1rem; }
+}
+
+@media (max-width: 480px) {
+  header { padding: 2.5rem 1rem 2rem; }
+  .site-title { letter-spacing: -0.02em; }
+  .tab-btn { font-size: 0.58rem; padding: 0.8rem 0.4rem; }
+  .tab-btn .tab-date { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="tricolor"></div>
+
+<header>
+  <div class="eiffel-bg">🗼</div>
+  <div class="header-inner">
+    <p class="eyebrow">Itinerario di viaggio · La Ville Lumière</p>
+    <h1 class="site-title">
+      Paris
+      <span>Île de la Cité · Rive Gauche · Montmartre</span>
+    </h1>
+    <div class="header-pills">
+      <span class="pill">🚄 In treno</span>
+      <span class="pill">📅 24 – 26 Aprile 2025</span>
+      <span class="pill">🏠 Airbnb · Notre-Dame</span>
+      <span class="pill">3 giorni · 3 quartieri</span>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-wrapper">
+  <div class="nav-inner">
+    <button class="tab-btn active" data-day="1" onclick="showDay(1)">
+      Île de la Cité
+      <span class="tab-date">Giovedì 24 Aprile</span>
+    </button>
+    <button class="tab-btn" data-day="2" onclick="showDay(2)">
+      Louvre &amp; Le Marais
+      <span class="tab-date">Venerdì 25 Aprile</span>
+    </button>
+    <button class="tab-btn" data-day="3" onclick="showDay(3)">
+      Montmartre
+      <span class="tab-date">Sabato 26 Aprile</span>
+    </button>
+  </div>
+</nav>
+
+<main id="days-container"></main>
+
+<footer>
+  <strong>Paris · 24–26 Aprile 2025</strong><br>
+  Partenza dal quartiere Notre-Dame · Verifica sempre gli orari aggiornati sui siti ufficiali
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+
+/* ══════════════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════════════ */
+
+const HOME_BASE = {
+  name: "🏠 Notre-Dame · Airbnb",
+  lat: 48.8530,
+  lng: 2.3499
+};
+
+const DAYS = [
+  {
+    id: 1,
+    dc: "d1",
+    date: "Giovedì 24 Aprile",
+    tabLabel: "Île de la Cité",
+    title: "Île de la Cité & Rive Gauche",
+    theme: "Il cuore medievale · L'isola originaria · Saint-Germain",
+    intro: "La prima giornata parte dai piedi di Notre-Dame per esplorare l'isola da cui è nata Parigi: cappelle gotiche, prigioni rivoluzionarie e la cattedrale finalmente restaurata. Poi la giornata scende sulla Rive Gauche tra il Musée de Cluny, il giardino del Senato e i caffè letterari di Saint-Germain-des-Prés.",
+    tip: "Prenotate Sainte-Chapelle online: le code possono superare l'ora. Notre-Dame, riaperta nel dicembre 2024, richiede un biglietto gratuito temporizzato — prenotate la mattina prima. La sera Saint-Germain è vivace ma non caotica: ottima zona per la cena.",
+    color: "#002395",
+    center: [48.852, 2.344],
+    zoom: 14,
+    stops: [
+      {
+        time: "09:30",
+        name: "Notre-Dame de Paris",
+        cat: "Cattedrale",
+        desc: "Riaperta nel dicembre 2024 dopo cinque anni di restauro post-incendio, Notre-Dame è tornata più splendente che mai. La visita è gratuita ma richiede la prenotazione di un ingresso temporizzato sul sito ufficiale. Non perdete il rosone occidentale e le nuove guglie restaurate.",
+        price: "Gratuito (biglietto temporizzato obbligatorio)",
+        duration: "1h – 1h30",
+        booking: true,
+        url: "https://www.notredamedeparis.fr/visiter/preparer-sa-visite/",
+        urlLabel: "Prenota ingresso gratuito",
+        lat: 48.8530, lng: 2.3499
+      },
+      {
+        time: "11:00",
+        name: "Sainte-Chapelle",
+        cat: "Cappella reale",
+        desc: "Capolavoro del gotico rayonnant commissionato da Luigi IX nel 1248 per custodire la corona di spine di Cristo. Le 15 vetrate gotiche su 1.113 pannelli — che ricoprono il 75% delle pareti — creano un effetto di luce che ha ispirato generazioni di artisti. Uno degli interni più belli al mondo.",
+        price: "€15 · Combo con Conciergerie: €22",
+        duration: "45min – 1h",
+        booking: true,
+        url: "https://www.sainte-chapelle.fr/en/plan-your-visit",
+        urlLabel: "Biglietti online",
+        lat: 48.8554, lng: 2.3450
+      },
+      {
+        time: "12:00",
+        name: "Conciergerie",
+        cat: "Museo storico",
+        desc: "Ex palazzo reale dei Capetingi e poi prigione rivoluzionaria, dove Marie-Antoinette attese la ghigliottina nel 1793. La grande Salle des Gens d'Armes (XIV sec.) è tra le più grandi sale gotiche civili conservate in Europa. Inclusa nel Paris Museum Pass.",
+        price: "€12 · Gratuito con Paris Museum Pass",
+        duration: "45min",
+        booking: false,
+        url: "https://www.paris-conciergerie.fr/en/plan-your-visit",
+        urlLabel: "Sito ufficiale",
+        lat: 48.8556, lng: 2.3468
+      },
+      {
+        time: "13:30",
+        name: "Pranzo · Place Saint-Michel",
+        cat: "Gastronomia",
+        desc: "Il Quartiere Latino pullula di brasserie, crêperies e bistrot. Evitate rue de la Huchette (turistica) e esplorate rue Saint-Séverin, rue de la Harpe o rue Mouffetard per locali più autentici. Ottima zona per una soupe à l'oignon o un croque-monsieur classico.",
+        price: "€15 – 25 a persona",
+        duration: "1h",
+        booking: false,
+        url: "https://www.timeout.com/paris/restaurants/best-restaurants-saint-michel",
+        urlLabel: "Ristoranti zona",
+        lat: 48.8530, lng: 2.3454
+      },
+      {
+        time: "14:30",
+        name: "Musée de Cluny",
+        cat: "Museo medievale",
+        desc: "Il Museo Nazionale del Medioevo ospita la celebre serie di sei arazzi 'La Dame à la Licorne' (fine XV sec.), tra i capolavori assoluti dell'arte tessile europea. Il museo sorge sui resti delle terme romane di Lutezia del II secolo, ancora parzialmente visibili.",
+        price: "€12 · Gratuito prima domenica del mese",
+        duration: "1h30",
+        booking: false,
+        url: "https://www.musee-moyenage.fr/en/plan-your-visit.html",
+        urlLabel: "Sito ufficiale",
+        lat: 48.8508, lng: 2.3441
+      },
+      {
+        time: "16:30",
+        name: "Jardin du Luxembourg",
+        cat: "Parco reale",
+        desc: "Voluto da Maria de' Medici nel 1612, il giardino del Senato è il polmone verde della Rive Gauche. In aprile le fontane sono attive, i tulipani in fiore e i parigini occupano le iconiche sedie verdi. La vasca ottagonale centrale è il fulcro del giardino.",
+        price: "Gratuito",
+        duration: "1h",
+        booking: false,
+        url: "https://www.senat.fr/visite/jardin/index.html",
+        urlLabel: "Info giardino",
+        lat: 48.8462, lng: 2.3372
+      },
+      {
+        time: "18:00",
+        name: "Saint-Germain-des-Prés",
+        cat: "Quartiere culturale",
+        desc: "Il quartiere di Sartre, Beauvoir e Hemingway. Passeggiare tra gallerie d'arte, librerie antiquarie e i caffè storici Café de Flore e Les Deux Magots è un rito parigino. Ottima zona per la cena: ristoranti dall'ottimo rapporto qualità-prezzo nascosti nelle traverse.",
+        price: "Gratuito",
+        duration: "2h+",
+        booking: false,
+        url: "https://www.saint-germain-des-pres.com",
+        urlLabel: "Scopri il quartiere",
+        lat: 48.8539, lng: 2.3332
+      }
+    ]
+  },
+  {
+    id: 2,
+    dc: "d2",
+    date: "Venerdì 25 Aprile",
+    tabLabel: "Louvre & Marais",
+    title: "Louvre & Le Marais",
+    theme: "Arte senza confini · Dalla preistoria al Cubismo",
+    intro: "La seconda giornata entra nel più grande museo del mondo di mattina presto, quando le sale sono ancora relativamente quiete. Dopo i Tuileries e il Palais-Royal, il pomeriggio si immerge nel cuore del Marais medievale e rinascimentale, tra la Place des Vosges, il Museo Picasso e le boutique indipendenti degli hôtels particuliers.",
+    tip: "Al Louvre selezionate 3–4 sale chiave: Vittoria di Samotracia (Escalier Daru), Venere di Milo (Salle 16, Aile Sully) e la Monna Lisa (Salle 711, 1° piano). Non cercate di vedere tutto: è impossibile in una giornata. Prenotate i biglietti online — le code allo sportello possono durare ore.",
+    color: "#C8102E",
+    center: [48.858, 2.352],
+    zoom: 14,
+    stops: [
+      {
+        time: "09:00",
+        name: "Musée du Louvre",
+        cat: "Museo",
+        desc: "Il museo più visitato al mondo con 35.000 opere esposte. Puntate sull'Ala Richelieu (arti decorative francesi), l'Ala Sully (antichità greche) e l'Ala Denon (pittura italiana). La piramide di vetro di Pei è essa stessa un'opera da ammirare.",
+        price: "€22 · Gratuito under 18 UE",
+        duration: "2h30 – 3h",
+        booking: true,
+        url: "https://www.louvre.fr/en/visit/practical-information/prices-and-opening-times",
+        urlLabel: "Biglietti ufficiali",
+        lat: 48.8606, lng: 2.3376
+      },
+      {
+        time: "12:30",
+        name: "Jardins des Tuileries",
+        cat: "Parco storico",
+        desc: "Tra il Louvre e Place de la Concorde, i Tuileries in aprile si animano di tulipani e ippocastani in fiore. Una passeggiata lungo l'asse storico — il grande viale prospettico parigino che da qui arriva fino alla Grande Arche de La Défense — è obbligatoria.",
+        price: "Gratuito",
+        duration: "30min",
+        booking: false,
+        url: "https://www.louvre.fr/en/visit/the-museum/the-tuileries-garden",
+        urlLabel: "Info giardino",
+        lat: 48.8634, lng: 2.3275
+      },
+      {
+        time: "13:00",
+        name: "Pranzo · Palais-Royal",
+        cat: "Gastronomia",
+        desc: "I bistrot intorno al Palais-Royal sono tra i preferiti dai parigiani del quartiere: steak-frites, entrecôte bordelaise, salade niçoise. Il giardino del Palais-Royal (gratuito) con le colonne di Buren è ideale per una pausa. Consigliato: Café Nemours sulla Place du Palais-Royal.",
+        price: "€18 – 30 a persona",
+        duration: "1h",
+        booking: false,
+        url: "https://www.domaine-palais-royal.fr",
+        urlLabel: "Palais-Royal",
+        lat: 48.8638, lng: 2.3369
+      },
+      {
+        time: "14:30",
+        name: "Place des Vosges",
+        cat: "Piazza storica",
+        desc: "La più bella piazza di Parigi, costruita da Enrico IV nel 1612. I portici simmetrici in mattone rosso e pietra bianca ospitano gallerie d'arte e il Musée Victor Hugo (gratuito, n. 6). Il giardino centrale con le fontane gemelle è il luogo di ritrovo dei residenti del Marais.",
+        price: "Gratuito (Musée Victor Hugo: gratuito)",
+        duration: "45min",
+        booking: false,
+        url: "https://www.paris.fr/lieux/place-des-vosges-4",
+        urlLabel: "Info Place des Vosges",
+        lat: 48.8554, lng: 2.3655
+      },
+      {
+        time: "15:30",
+        name: "Musée Picasso Paris",
+        cat: "Museo d'arte",
+        desc: "Nell'hôtel particulier Salé del XVII secolo, la più grande collezione pubblica di Picasso: 5.000 opere donate dagli eredi allo Stato francese. Il percorso copre tutta la carriera dell'artista — dal periodo Blu e Rosa al Cubismo analitico e sintetico, fino alle ultime tele.",
+        price: "€14 · Gratuito under 18 UE",
+        duration: "1h30",
+        booking: true,
+        url: "https://www.museepicassoparis.fr/en/plan-your-visit",
+        urlLabel: "Biglietti online",
+        lat: 48.8598, lng: 2.3621
+      },
+      {
+        time: "17:00",
+        name: "Le Marais — quartiere",
+        cat: "Shopping · Quartiere",
+        desc: "Il quartiere più vivace di Parigi: ebraico e LGBTQ+, medievale e contemporaneo. Rue des Rosiers per il miglior falafel della città (L'As du Fallafel), rue de Bretagne per il Marché des Enfants Rouges (il mercato coperto più antico di Parigi, 1612), rue Vieille-du-Temple per le boutique.",
+        price: "Gratuito (ingresso)",
+        duration: "2h+",
+        booking: false,
+        url: "https://www.lemarais.fr",
+        urlLabel: "Guida al Marais",
+        lat: 48.8575, lng: 2.3590
+      }
+    ]
+  },
+  {
+    id: 3,
+    dc: "d3",
+    date: "Sabato 26 Aprile",
+    tabLabel: "Montmartre",
+    title: "Montmartre & Grands Boulevards",
+    theme: "La collina degli artisti · Shopping · Rientro serale",
+    intro: "L'ultima mattina risale la Butte Montmartre al ritmo lento di un sabato parigino: la basilica che domina tutta la città, la piazza degli artisti, il museo di Renoir e i profumi del mercato di rue Lepic. Il pomeriggio scende ai Grands Boulevards per un ultimo giro tra i grandi magazzini prima del treno serale.",
+    tip: "Salite a Montmartre a piedi dalle scalinate di rue Foyatier: più rapido del funicolare e panoramico. Partite presto — il sabato il quartiere si affollerà dal pomeriggio. Per il treno, raggiungete la stazione con almeno 45 minuti di anticipo e ricordate il ritiro del biglietto.",
+    color: "#C9A84C",
+    center: [48.882, 2.338],
+    zoom: 14,
+    stops: [
+      {
+        time: "09:00",
+        name: "Sacré-Cœur",
+        cat: "Basilica",
+        desc: "La basilica in pietra travertino bianco domina Parigi dalla collina di Montmartre (130m s.l.m.). Costruita tra il 1875 e il 1914 in stile romano-bizantino, la sua cupola offre una delle viste più complete sulla città. L'enorme mosaico absidale del Cristo in Maestà è tra i più grandi al mondo.",
+        price: "Gratuito (interno) · Cupola: €8",
+        duration: "45min",
+        booking: false,
+        url: "https://www.sacre-coeur-montmartre.com/en/tourist-and-pilgrim/prepare-your-visit/",
+        urlLabel: "Sito ufficiale",
+        lat: 48.8867, lng: 2.3431
+      },
+      {
+        time: "10:00",
+        name: "Place du Tertre",
+        cat: "Piazza degli artisti",
+        desc: "La celebre piazza degli artisti di strada, dove pittori e ritrattisti lavorano en plein air come ai tempi del Montmartre bohémien. Il sabato mattina presto è il momento migliore per vederla nel suo stato più autentico, prima che si affolli nel pomeriggio.",
+        price: "Gratuito",
+        duration: "30min",
+        booking: false,
+        url: "https://www.montmartre-guide.com/place-du-tertre.html",
+        urlLabel: "Guida Montmartre",
+        lat: 48.8864, lng: 2.3408
+      },
+      {
+        time: "10:45",
+        name: "Musée de Montmartre",
+        cat: "Museo",
+        desc: "Nel più antico edificio sopravvissuto di Montmartre (XVII sec.), il museo ripercorre la storia della Butte: manifesti originali di Toulouse-Lautrec e Jules Chéret, la ricostruzione dello studio di Renoir, e i celebri Jardins Renoir con vista sui tetti e sul vigneto. Inclusi nel biglietto.",
+        price: "€15 adulti",
+        duration: "1h15",
+        booking: false,
+        url: "https://museedemontmartre.fr/en/prepare-your-visit/",
+        urlLabel: "Biglietti e orari",
+        lat: 48.8878, lng: 2.3389
+      },
+      {
+        time: "12:30",
+        name: "Rue Lepic — mercato & pranzo",
+        cat: "Gastronomia · Mercato",
+        desc: "La strada più bella di Montmartre scende tra fromageries, boulangeries e negozi di alimentari di quartiere. I caffè intorno a rue des Abbesses sono autentici e frequentati dai residenti. A due passi: la Maison Rose in rue de l'Abreuvoir, la casetta rosa più fotografata di Parigi.",
+        price: "€15 – 25 a persona",
+        duration: "1h",
+        booking: false,
+        url: "https://www.timeout.com/paris/restaurants/best-restaurants-montmartre",
+        urlLabel: "Ristoranti zona",
+        lat: 48.8839, lng: 2.3354
+      },
+      {
+        time: "14:00",
+        name: "Moulin Rouge",
+        cat: "Monumento",
+        desc: "Il cabaret con le ali rosse aperto nel 1889 da Joseph Oller, immaginato da Toulouse-Lautrec nei suoi manifesti, è un'icona di Parigi irrinunciabile da fotografare. Si trova in Boulevard de Clichy, comodo punto di transizione verso la discesa ai Grands Boulevards.",
+        price: "Gratuito (esterno) · Spettacolo serale: da €115",
+        duration: "15min",
+        booking: false,
+        url: "https://www.moulinrouge.fr/en/the-moulin-rouge-today/",
+        urlLabel: "Sito Moulin Rouge",
+        lat: 48.8842, lng: 2.3323
+      },
+      {
+        time: "14:30",
+        name: "Galeries Lafayette Haussmann",
+        cat: "Shopping",
+        desc: "La monumentale cupola Art Nouveau del 1912 è già di per sé un monumento da visitare. Lo store principale si sviluppa su 10 piani di moda, gastronomia e design. La terrazza panoramica sul tetto è gratuita e offre una vista su tutta Parigi — perfetta per un ultimo sguardo alla città.",
+        price: "Gratuito (ingresso e terrazza)",
+        duration: "1h – 1h30",
+        booking: false,
+        url: "https://www.galerieslafayette.com/magasin/galeries-lafayette-paris-haussmann/",
+        urlLabel: "Sito ufficiale",
+        lat: 48.8732, lng: 2.3318
+      }
+    ]
+  }
+];
+
+/* ══════════════════════════════════════════════════════════
+   RENDER FUNCTIONS
+══════════════════════════════════════════════════════════ */
+
+function renderStops(stops, dc) {
+  return stops.map((s, i) => `
+    <div class="stop-card ${dc}">
+      <div class="card-stripe"></div>
+      <div class="card-body">
+        <div class="card-top">
+          <div class="badges">
+            <span class="badge badge-time">${s.time}</span>
+            <span class="badge badge-cat">${s.cat}</span>
+          </div>
+          <div class="stop-num">${i + 1}</div>
+        </div>
+        <div class="card-name">${s.name}</div>
+        <div class="card-desc">${s.desc}</div>
+        <div class="card-info">
+          <div class="info-row">💶 ${s.price}</div>
+          <div class="info-row">⏱ ${s.duration}</div>
+          ${s.booking ? `<div class="info-row info-booking">⚠ Prenotazione online consigliata</div>` : ''}
+        </div>
+        <a class="btn-link" href="${s.url}" target="_blank" rel="noopener noreferrer">↗ ${s.urlLabel}</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDays() {
+  const container = document.getElementById('days-container');
+  container.innerHTML = DAYS.map(day => `
+    <section class="day-section${day.id === 1 ? ' active' : ''}" id="day${day.id}">
+      <div class="day-header">
+        <div class="day-header-inner">
+          <div class="day-tag ${day.dc}">Giorno ${day.id} · ${day.date}</div>
+          <h2 class="day-title">${day.title}</h2>
+          <p class="day-theme">${day.theme}</p>
+          <p class="day-intro">${day.intro}</p>
+        </div>
+      </div>
+      <div class="day-content">
+        <div class="tip-box">
+          <div class="tip-label">💡 Consigli pratici</div>
+          ${day.tip}
+        </div>
+        <div class="stops-grid ${day.dc}">
+          ${renderStops(day.stops, day.dc)}
+        </div>
+        <div class="map-section">
+          <div class="map-label">
+            🗺 Mappa del giorno
+          </div>
+          <div class="map-legend">
+            <span><span class="legend-dot" style="background:${day.color}"></span> Tappa</span>
+            <span><span class="legend-dot" style="background:#18181B"></span> Airbnb · Notre-Dame</span>
+          </div>
+          <div class="map-container" id="map${day.id}"></div>
+        </div>
+      </div>
+    </section>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════════════════
+   MAP INITIALIZATION
+══════════════════════════════════════════════════════════ */
+
+const maps = {};
+const mapsReady = {};
+
+function buildMarkerIcon(content, color, textColor = '#fff') {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:34px;height:34px;
+      background:${color};
+      border:3px solid #fff;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      color:${textColor};
+      font-weight:700;font-size:13px;
+      font-family:'Montserrat',sans-serif;
+      box-shadow:0 2px 8px rgba(0,0,0,0.35);
+      cursor:pointer;
+    ">${content}</div>`,
+    iconSize: [34, 34],
+    iconAnchor: [17, 17],
+    popupAnchor: [0, -18]
+  });
+}
+
+function buildHomeIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:38px;height:38px;
+      background:#18181B;
+      border:3px solid #fff;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:17px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.4);
+      cursor:pointer;
+    ">🏠</div>`,
+    iconSize: [38, 38],
+    iconAnchor: [19, 19],
+    popupAnchor: [0, -20]
+  });
+}
+
+function initMapForDay(dayId) {
+  if (mapsReady[dayId]) return;
+  mapsReady[dayId] = true;
+
+  const day = DAYS.find(d => d.id === dayId);
+  const mapEl = document.getElementById(`map${dayId}`);
+  if (!mapEl) return;
+
+  const map = L.map(mapEl, { zoomControl: true }).setView(day.center, day.zoom);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Home base
+  L.marker([HOME_BASE.lat, HOME_BASE.lng], { icon: buildHomeIcon() })
+    .addTo(map)
+    .bindPopup(`<b style="font-family:Montserrat,sans-serif;font-size:0.75rem">${HOME_BASE.name}</b><br><span style="font-size:0.7rem;color:#666">Punto di partenza</span>`);
+
+  // Stops
+  const textColor = dayId === 3 ? '#18181B' : '#fff';
+  day.stops.forEach((stop, i) => {
+    L.marker([stop.lat, stop.lng], { icon: buildMarkerIcon(i + 1, day.color, textColor) })
+      .addTo(map)
+      .bindPopup(`
+        <b style="font-family:Montserrat,sans-serif;font-size:0.75rem">${i + 1}. ${stop.name}</b><br>
+        <span style="font-family:Montserrat,sans-serif;font-size:0.65rem;color:#555">${stop.time} · ${stop.cat}</span><br>
+        <a href="${stop.url}" target="_blank" rel="noopener"
+           style="font-family:Montserrat,sans-serif;font-size:0.65rem;color:${day.color};font-weight:700;">
+          ↗ ${stop.urlLabel}
+        </a>
+      `);
+  });
+
+  maps[dayId] = map;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TAB NAVIGATION
+══════════════════════════════════════════════════════════ */
+
+function showDay(day) {
+  // Update sections
+  document.querySelectorAll('.day-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  const section = document.getElementById(`day${day}`);
+  const btn = document.querySelector(`.tab-btn[data-day="${day}"]`);
+
+  if (section) section.classList.add('active');
+  if (btn) btn.classList.add('active');
+
+  // Init map lazily, then fix size
+  initMapForDay(day);
+  setTimeout(() => {
+    if (maps[day]) maps[day].invalidateSize();
+  }, 120);
+
+  // Scroll to top of content
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ══════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderDays();
+  // Init day 1 immediately (it's visible)
+  initMapForDay(1);
+});
+
+</script>
+</body>
+</html>
