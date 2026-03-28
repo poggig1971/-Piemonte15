@@ -893,10 +893,9 @@ function switchAuthTab(tab) {
 }
 
 async function callGAS(payload) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(payload),
+  const params = new URLSearchParams(payload).toString();
+  const res = await fetch(`${GAS_URL}?${params}`, {
+    method: 'GET',
     redirect: 'follow'
   });
   return res.json();
@@ -1163,5 +1162,6 @@ function showDay(day) {
 </script>
 </body>
 </html>
+
 
 
